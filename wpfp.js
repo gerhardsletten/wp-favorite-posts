@@ -17,9 +17,18 @@ function wpfp_do_js( dhis, doAjax ) {
     beforeImg.hide();
     url = document.location.href.split('#')[0];
     params = dhis.attr('href').replace('?', '') + '&ajax=1';
+    
+
     if ( doAjax ) {
         jQuery.get(url, params, function(data) {
-                dhis.parent().html(data);
+        //alert (data);
+       if(alert_type == '1'){ 
+        	dhis.parent().html(data);
+        	} 
+        else{
+                alert (data);
+                dhis.parent().html("");
+        }
                 if(typeof wpfp_after_ajax == 'function') {
                     wpfp_after_ajax( dhis ); // use this like a wp action.
                 }

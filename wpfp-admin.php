@@ -23,6 +23,11 @@ if ( isset($_POST['submit']) ) {
 	$wpfp_options['dont_load_css_file'] = htmlspecialchars($_POST['dont_load_css_file']);
 	$wpfp_options['autoshow'] = htmlspecialchars($_POST['autoshow']);
 	$wpfp_options['post_per_page'] = htmlspecialchars($_POST['post_per_page']);
+	
+	$wpfp_options['max_fav_posts'] = htmlspecialchars($_POST['max_fav_posts']);
+	$wpfp_options['max_limit_reached'] = htmlspecialchars($_POST['max_limit_reached']);
+	$wpfp_options['alert_method'] = htmlspecialchars($_POST['alert_method']);
+
 
 	update_option('wpfp_options', $wpfp_options);
 }
@@ -142,10 +147,29 @@ jQuery(document).ready(function($) {
                     <input type="text" name="post_per_page" size="2" value="<?php echo stripslashes($wpfp_options['post_per_page']); ?>" /> * This only works with default favorite post list page (wpfp-page-template.php).
                 </td>
             </tr>
+
+
+            <tr>
+                <th><?php _e("Maximum Favorite Posts", "wp-favorite-posts") ?></th>
+                <td>
+                    <input type="text" name="max_fav_posts" size="2" value="<?php echo stripslashes($wpfp_options['max_fav_posts']); ?>" /> To disable set to 0 or leave it blank.
+                </td>
+            </tr>
+
+
+<tr>
+                <th><?php _e("Max favorited posts limit reached alert method", "wp-favorite-posts") ?>*</th>
+                <td>
+                    <label for="inline-alert"><input type="radio" name="alert_method" id="inline-alert" value="1" <?php if ($wpfp_options['alert_method']) echo "checked='checked'" ?> /> Inline</label>
+                    <label for="inline-alert"><input type="radio" name="alert_method" id="js-alert" value="0" <?php if (!$wpfp_options['alert_method']) echo "checked='checked'" ?> /> JS alert</label>
+                </td>
+            </tr>
+
+
             <tr>
                 <th><?php _e("Most favorited posts statics", "wp-favorite-posts") ?>*</th>
                 <td>
-                    <label for="stats-enabled"><input type="radio" name="statics" id="stats-enabled" value="1" <?php if ($wpfp_options['statics']) echo "checked='checked'" ?> /> Enabled</label>
+                    <label for="stats-enabled"><input type="radio" name="statics" id="stats-enabled" value="1" <?php if ($wpfp_options['statics']) echo "checked='checked'" ?> />Enabled </label>
                     <label for="stats-disabled"><input type="radio" name="statics" id="stats-disabled" value="0" <?php if (!$wpfp_options['statics']) echo "checked='checked'" ?> /> Disabled</label>
                 </td>
             </tr>
@@ -218,6 +242,11 @@ jQuery(document).ready(function($) {
             </tr>
             <tr>
                 <th><?php _e("Text for \"only registered users can favorite\" error message", "wp-favorite-posts") ?></th><td><textarea name="text_only_registered" rows="2" cols="35"><?php echo stripslashes($wpfp_options['text_only_registered']); ?></textarea></td>
+            </tr>
+
+            <tr>
+            <tr>
+                <th><?php _e("Text for \"Maximum Favorite Post Limit Reahed\" error message", "wp-favorite-posts") ?></th><td><textarea name="max_limit_reached" rows="2" cols="35"><?php echo stripslashes($wpfp_options['max_limit_reached']); ?></textarea></td>
             </tr>
 
             <tr>

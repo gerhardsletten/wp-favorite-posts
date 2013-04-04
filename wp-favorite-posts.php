@@ -33,7 +33,25 @@ define('WPFP_USER_OPTION_KEY', "wpfp_useroptions");
 define('WPFP_COOKIE_KEY', "wp-favorite-posts");
 
 $ajax_mode = 1;
-
+function have_reached_max_limit(){
+        // Max-limit is disabled
+    	if(wpfp_get_option('max_fav_posts') == 0 || wpfp_get_option('max_fav_posts') == "" ) return false;
+    	
+    	
+    	if (is_user_logged_in()) 
+    		// for logged-in user
+	    	$wpfp_favorites = wpfp_get_user_meta();
+		
+	else
+		// for guest user
+	    	$wpfp_favorites = wpfp_get_cookie();
+		
+    	if(is_array($wpfp_favorites) && count($wpfp_favorites)  >= wpfp_get_option('max_fav_posts')){
+		return true;
+		}
+    	    return false;	
+	
+}
 function wp_favorite_posts() {
     if (isset($_REQUEST['wpfpaction'])):
         global $ajax_mode;
@@ -65,11 +83,15 @@ function wpfp_add_favorite($post_id = "") {
         } else {
             wpfp_die_or_go(wpfp_get_option('added'));
         }
-    }
+        /////////////////////////////////////////////////////////////////////////////////////////////
+    }else wpfp_die_or_go(wpfp_get_option('max_limit_reached') );
 }
+
+
 function wpfp_do_add_to_list($post_id) {
     if (wpfp_check_favorited($post_id))
         return false;
+    if(have_reached_max_limit()){ return false;} //////////////////////////////////////////////////////
     if (is_user_logged_in()) {
         return wpfp_add_to_usermeta($post_id);
     } else {
@@ -107,7 +129,10 @@ function wpfp_die_or_go($str) {
 }
 
 function wpfp_add_to_usermeta($post_id) {
+
     $wpfp_favorites = wpfp_get_user_meta();
+
+        
     $wpfp_favorites[] = $post_id;
     wpfp_update_user_meta($wpfp_favorites);
     return true;
@@ -148,11 +173,12 @@ function wpfp_link( $return = 0, $action = "", $show_span = 1, $args = array() )
     endif;
     if ($show_span)
         $str .= "</span>";
+    $str .= '<script type="text/javascript"> var alert_type = '.wpfp_get_option('alert_method').'; </script>';
     if ($return) { return $str; } else { echo $str; }
 }
 
 function wpfp_link_html($post_id, $opt, $action) {
-    $link = "<a class='wpfp-link' href='?wpfpaction=".$action."&amp;postid=". $post_id . "' title='". $opt ."' rel='nofollow'>". $opt ."</a>";
+    $link = "<a class='wpfp-link' alert_type = '0' href='?wpfpaction=".$action."&amp;postid=". $post_id . "' title='". $opt ."' rel='nofollow'>". $opt ."</a>";
     $link = apply_filters( 'wpfp_link_html', $link );
     return $link;
 }
@@ -331,6 +357,11 @@ function wpfp_init() {
     $wpfp_options['dont_load_js_file'] = 0;
     $wpfp_options['dont_load_css_file'] = 0;
     $wpfp_options['post_per_page'] = 20;
+    //max_limit_reached ////////////////////////////////////////////////////////////////////
+    $wpfp_options['max_fav_posts'] = 5;
+    $wpfp_options['max_limit_reached'] = "You have reached maximum limit of favorite posts!";
+    $wpfp_options['alert_method'] = 1;
+    
     add_option('wpfp_options', $wpfp_options, 'Favorite Posts Options');
 }
 add_action('activate_wp-favorite-posts/wp-favorite-posts.php', 'wpfp_init');
