@@ -32,6 +32,14 @@ define('WPFP_META_KEY', "wpfp_favorites");
 define('WPFP_USER_OPTION_KEY', "wpfp_useroptions");
 define('WPFP_COOKIE_KEY', "wp-favorite-posts");
 
+add_filter("the_content", 'wpfp_max_js');
+function wpfp_max_js($c){
+$myjs = '<script type="text/javascript"> var alert_type = "'.wpfp_get_option('alert_method').'"; var max_msg = "'.wpfp_get_option('max_limit_reached').'";</script>';
+return $c.$myjs;
+
+
+}
+//
 $ajax_mode = 1;
 function have_reached_max_limit(){
         // Max-limit is disabled
@@ -77,15 +85,18 @@ function wpfp_add_favorite($post_id = "") {
         // added, now?
         do_action('wpfp_after_add', $post_id);
         if (wpfp_get_option('statics')) wpfp_update_post_meta($post_id, 1);
-        if (wpfp_get_option('added') == 'show remove link') {
+        
+	if (wpfp_get_option('added') == 'show remove link' ) {
             $str = wpfp_link(1, "remove", 0, array( 'post_id' => $post_id ) );
             wpfp_die_or_go($str);
         } else {
             wpfp_die_or_go(wpfp_get_option('added'));
         }
-        /////////////////////////////////////////////////////////////////////////////////////////////
-    }else wpfp_die_or_go(wpfp_get_option('max_limit_reached') );
+    }	else if(have_reached_max_limit()) wpfp_die_or_go("max_error"); 
+		
+		
 }
+
 
 
 function wpfp_do_add_to_list($post_id) {
@@ -173,12 +184,14 @@ function wpfp_link( $return = 0, $action = "", $show_span = 1, $args = array() )
     endif;
     if ($show_span)
         $str .= "</span>";
-    $str .= '<script type="text/javascript"> var alert_type = '.wpfp_get_option('alert_method').'; </script>';
+    
     if ($return) { return $str; } else { echo $str; }
 }
 
 function wpfp_link_html($post_id, $opt, $action) {
-    $link = "<a class='wpfp-link' alert_type = '0' href='?wpfpaction=".$action."&amp;postid=". $post_id . "' title='". $opt ."' rel='nofollow'>". $opt ."</a>";
+    if(have_reached_max_limit()){ $att = "max-limit-reached = 'true'";} else { $att = "max-limit-reached = 'false'";} 
+        //if($action==){ $att = "max-limit-reached = 'true'";} else { $att = "max-limit-reached = 'false'";} 
+    $link = "<a class='wpfp-link' alert_type = '0' $att href='?wpfpaction=".$action."&amp;postid=". $post_id . "' title='". $opt ."' rel='nofollow'>". $opt ."</a>";
     $link = apply_filters( 'wpfp_link_html', $link );
     return $link;
 }
@@ -472,3 +485,4 @@ function wpfp_get_option($opt) {
     $wpfp_options = wpfp_get_options();
     return htmlspecialchars_decode( stripslashes ( $wpfp_options[$opt] ) );
 }
+?>

@@ -9,7 +9,7 @@ jQuery(document).ready( function($) {
         return false;
     });
 });
-
+var max = false;
 function wpfp_do_js( dhis, doAjax ) {
     loadingImg = dhis.prev();
     loadingImg.show();
@@ -18,17 +18,23 @@ function wpfp_do_js( dhis, doAjax ) {
     url = document.location.href.split('#')[0];
     params = dhis.attr('href').replace('?', '') + '&ajax=1';
     
+    
 
     if ( doAjax ) {
         jQuery.get(url, params, function(data) {
         //alert (data);
-       if(alert_type == '1'){ 
+        
+               	if (data == "max_error" && alert_type == "alert_js") {
+               	             	
+               	alert(max_msg);
+               	
+               	//dhis.parent().html(data);
+               	loadingImg.hide();
+               	beforeImg.show();
+               	return;
+               	}
         	dhis.parent().html(data);
-        	} 
-        else{
-                alert (data);
-                dhis.parent().html("");
-        }
+        
                 if(typeof wpfp_after_ajax == 'function') {
                     wpfp_after_ajax( dhis ); // use this like a wp action.
                 }

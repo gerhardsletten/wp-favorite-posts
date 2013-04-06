@@ -5,6 +5,10 @@ if ( isset($_POST['submit']) ) {
 		die(__('Cheatin&#8217; uh?'));
     if ($_POST['show_remove_link'] == 'show_remove_link') $_POST['added'] = 'show remove link';
     if ($_POST['show_add_link'] == 'show_add_link') $_POST['removed'] = 'show add link';
+    
+    
+ 
+	
 	$wpfp_options['add_favorite'] = htmlspecialchars($_POST['add_favorite']);
 	$wpfp_options['added'] = htmlspecialchars($_POST['added']);
 	$wpfp_options['remove_favorite'] = htmlspecialchars($_POST['remove_favorite']);
@@ -160,8 +164,8 @@ jQuery(document).ready(function($) {
 <tr>
                 <th><?php _e("Max favorited posts limit reached alert method", "wp-favorite-posts") ?>*</th>
                 <td>
-                    <label for="inline-alert"><input type="radio" name="alert_method" id="inline-alert" value="1" <?php if ($wpfp_options['alert_method']) echo "checked='checked'" ?> /> Inline</label>
-                    <label for="inline-alert"><input type="radio" name="alert_method" id="js-alert" value="0" <?php if (!$wpfp_options['alert_method']) echo "checked='checked'" ?> /> JS alert</label>
+                    <label for="alert_method"><input type="radio" name="alert_method" id="inline-alert" value="alert_inline" <?php if ($wpfp_options['alert_method']== "alert_inline") echo "checked='checked'"; ?> /> Inline</label>
+                    <label for="alert_method"><input type="radio" name="alert_method" id="js-alert" value="alert_js" <?php if ($wpfp_options['alert_method'] == "alert_js") echo "checked='checked'"; ?> /> JS alert</label><?php //echo $wpfp_options['alert_method']; ?>
                 </td>
             </tr>
 
@@ -209,7 +213,7 @@ jQuery(document).ready(function($) {
 
 
         <table class="form-table">
-            <tr>
+           <tr>
                 <th><?php _e("Text for add link", "wp-favorite-posts") ?></th><td><input type="text" name="add_favorite" value="<?php echo stripslashes($wpfp_options['add_favorite']); ?>" /></td>
             </tr>
             <tr>
